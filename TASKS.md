@@ -2,57 +2,41 @@
 
 ## Phase 1: Foundation
 
-- [ ] Create Python environment
-- [ ] Configure project structure
-- [ ] Connect LLM API
-- [ ] Implement conversation manager
+- [x] Configure Python package structure and dependency management.
+- [x] Implement configurable OpenAI-compatible chat API and conversation
+  endpoint (mocked provider tests; live credentials not verified).
+- [x] Add health endpoint and automated API tests.
+- [ ] Verify a chat request against a real provider using a locally configured
+  API key.
 
 ## Phase 2: Tool Execution
 
-- [ ] Create tool registry
-- [ ] Implement file reading
-- [ ] Implement file writing
-- [ ] Implement controlled Python execution
-- [ ] Add tool error handling
+- [ ] Define a permission-aware tool interface and registry.
+- [ ] Add narrowly scoped file operations.
+- [ ] Design safe execution for supported code tasks; do not run unrestricted
+  model-generated commands.
+- [ ] Add tool failure handling and audit records.
 
-## Phase 3: Agent Intelligence
+## Phase 3: Agent Workflows
 
-- [ ] Implement task planning
-- [ ] Implement multi-step execution
-- [ ] Add execution state tracking
-- [ ] Add tool selection
+- [ ] Add explicit task planning and execution state.
+- [ ] Add bounded retries and progress reporting.
 
 ## Phase 4: Verification
 
-- [ ] Implement output verification
-- [ ] Add independent review
-- [ ] Add error correction
-- [ ] Add retry limits
+- [ ] Verify task outputs against explicit requirements and evidence.
+- [ ] Add correction and failure-reporting flows.
 
 ## Phase 5: Memory
 
-- [ ] Conversation history
-- [ ] Persistent memory
-- [ ] Memory retrieval
-- [ ] Memory management
+- [ ] Design inspectable, user-controlled conversation and project memory.
 
-## Phase 6: Background Tasks
+## Phase 6: Background Tasks and Human Approval
 
-- [ ] Task queue
-- [ ] Background execution
-- [ ] Task monitoring
-- [ ] Task cancellation
+- [ ] Add bounded background execution, status, and cancellation.
+- [ ] Require approval for consequential external actions.
 
-## Phase 7: Security
+## Phase 7: Interface
 
-- [ ] Permission management
-- [ ] Human approval system
-- [ ] Tool execution restrictions
-- [ ] Security testing
-
-## Phase 8: Interface
-
-- [ ] Build web interface
-- [ ] Task dashboard
-- [ ] Execution logs
-- [ ] Approval interface
+- [ ] Build a user interface for conversations, tasks, tool activity, and
+  approvals.

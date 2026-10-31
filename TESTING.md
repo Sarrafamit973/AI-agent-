@@ -1,68 +1,42 @@
 # Testing Guide
 
-## 1. General Conversation
-Test:
-- Simple questions.
-- Complex questions.
-- Follow-up questions.
-- Incorrect or incomplete instructions.
+## Install test dependencies
 
-Expected:
-- Relevant answers.
-- No fabricated tool results.
+From the repository root, create and activate a virtual environment, then run:
 
-## 2. Tool Execution
-Test:
-- Valid tool calls.
-- Invalid arguments.
-- Tool failures.
-- Permission restrictions.
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e ".[dev]"
+```
 
-Expected:
-- Correct execution.
-- Proper error handling.
-- No unauthorized actions.
+## Run automated tests
 
-## 3. Planning
-Test:
-- Multi-step tasks.
-- Missing information.
-- Conflicting requirements.
+```powershell
+python -m pytest
+```
 
-Expected:
-- Logical task breakdown.
-- Correct execution order.
+The suite uses FastAPI's test client and an in-memory HTTP transport. It does
+not make network requests or require a provider API key.
 
-## 4. Verification
-Test:
-- Incorrect tool output.
-- Missing data.
-- Failed operations.
-- Incorrect calculations.
+Current automated coverage includes:
 
-Expected:
-- Errors detected.
-- Corrections attempted.
-- Unresolved issues reported.
+- Health endpoint response.
+- Successful chat response and provider request configuration.
+- Missing API key and invalid chat input.
+- Provider timeout and non-success responses.
+- Malformed provider response payloads.
 
-## 5. Memory
-Test:
-- Store information.
-- Retrieve information.
-- Update information.
-- Delete information.
+## Manual provider smoke test
 
-Expected:
-- Correct retrieval.
-- No unintended memory changes.
+Set `OPENAI_API_KEY` in the environment, start the application using the
+README instructions, then send a `POST /chat` request with a short message.
+This makes a real provider request and may incur provider charges. It is
+intentionally not part of automated tests.
 
-## 6. Security
-Test:
-- Unauthorized file access.
-- Dangerous commands.
-- Prompt injection attempts.
-- Attempts to bypass approval.
+## Planned coverage
 
-Expected:
-- Restricted operations blocked.
-- Sensitive information protected.
+Automated tests for tool permissions, task planning, output verification,
+memory controls, background execution, and approval bypass are pending because
+those features do not exist yet. Add tests alongside each feature before
+marking its task complete.
