@@ -1,6 +1,16 @@
-import logging
+from __future__ import annotations
 
-import httpx
+import logging
+from importlib import import_module
+from typing import TYPE_CHECKING, Literal, Sequence
+
+if TYPE_CHECKING:
+    import httpx
+else:
+    try:
+        httpx = import_module("httpx")
+    except ModuleNotFoundError:  # pragma: no cover - dependency is required at runtime
+        httpx = None
 
 from personal_ai_agent.config import Settings
 
@@ -23,9 +33,15 @@ async def get_chat_reply(
     message: str,
     settings: Settings,
     transport: httpx.AsyncBaseTransport | None = None,
+    history: Sequence[tuple[Literal["user", "assistant"], str]] = (),
 ) -> str:
+    if httpx is None:
+        raise ChatProviderError("The httpx dependency is not installed")
     if not settings.api_key:
         raise ChatConfigurationError
+
+    messages = [{"role": role, "content": content} for role, content in history]
+    messages.append({"role": "user", "content": message})
 
     try:
         async with httpx.AsyncClient(
@@ -37,7 +53,7 @@ async def get_chat_reply(
                 headers={"Authorization": f"Bearer {settings.api_key}"},
                 json={
                     "model": settings.model,
-                    "messages": [{"role": "user", "content": message}],
+                    "messages": messages,
                 },
             )
     except httpx.TimeoutException as exc:

@@ -38,5 +38,6 @@
 
 ## Phase 7: Interface
 
-- [ ] Build a user interface for conversations, tasks, tool activity, and
-  approvals.
+- [x] Add a browser-based conversation interface with temporary chat context.
+- [ ] Build task tracking, tool activity, and approval views as their backend
+  capabilities are implemented.

@@ -2,6 +2,13 @@
 
 Important project changes are recorded here.
 
+## [Unreleased]
+
+### Added
+- Responsive browser-based chat interface with in-session conversation context.
+- Validation and forwarding for up to 20 prior user/assistant messages.
+- Tests covering the interface route and conversation history.
+
 ## [0.1.0] - 2026-10-31
 
 ### Added

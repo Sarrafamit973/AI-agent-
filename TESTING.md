@@ -21,9 +21,11 @@ not make network requests or require a provider API key.
 
 Current automated coverage includes:
 
+- Browser interface route.
 - Health endpoint response.
-- Successful chat response and provider request configuration.
+- Successful chat response, bearer authentication, and conversation context.
 - Missing API key and invalid chat input.
+- Invalid conversation history.
 - Provider timeout and non-success responses.
 - Malformed provider response payloads.
 

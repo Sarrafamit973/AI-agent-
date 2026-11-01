@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101714">
+  <title>Personal AI Agent</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #101714;
+      color: #edf4ef;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      --muted: #9aa9a0;
+      --line: #29362f;
+      --surface: #17211b;
+      --accent: #b7efcc;
+      --accent-ink: #14251a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      background: radial-gradient(ellipse at 50% -18%, #263b2e 0, transparent 50%), #101714;
+    }
+
+    button, textarea { font: inherit; }
+
+    .shell {
+      width: min(100% - 40px, 900px);
+      min-height: 100vh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgb(237 244 239 / 8%);
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: var(--accent);
+      background: #25392c;
+      font-size: 19px;
+    }
+    .brand-name { font-size: 14px; font-weight: 650; letter-spacing: .01em; }
+    .brand-caption { margin-top: 3px; color: var(--muted); font-size: 11px; }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .status::before {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #89d9a8;
+      content: "";
+      box-shadow: 0 0 12px rgb(137 217 168 / 50%);
+    }
+
+    main { flex: 1; display: flex; flex-direction: column; }
+    .welcome { margin: auto auto 34px; padding-top: 54px; text-align: center; }
+    .eyebrow {
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    h1 { margin: 14px 0 10px; font-size: clamp(29px, 5vw, 42px); letter-spacing: -.045em; }
+    .intro { max-width: 470px; margin: auto; color: var(--muted); font-size: 14px; line-height: 1.7; }
+
+    .conversation {
+      width: 100%;
+      display: grid;
+      gap: 18px;
+      margin: 0 auto 28px;
+    }
+    .conversation:empty { display: none; }
+    .message { display: flex; gap: 12px; align-items: flex-start; }
+    .message.user { flex-direction: row-reverse; }
+    .avatar {
+      width: 30px;
+      height: 30px;
+      flex: 0 0 30px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--accent);
+      background: #1b2920;
+      font-size: 12px;
+    }
+    .user .avatar { color: #e8eee9; background: #29332d; }
+    .bubble {
+      max-width: min(78%, 680px);
+      padding: 12px 15px;
+      border: 1px solid var(--line);
+      border-radius: 4px 15px 15px;
+      background: var(--surface);
+      color: #e5ece7;
+      font-size: 14px;
+      line-height: 1.65;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+    .user .bubble {
+      border-color: #3a5142;
+      border-radius: 15px 4px 15px 15px;
+      background: #22342a;
+    }
+    .bubble.error { border-color: #74433d; color: #ffc4b9; }
+
+    .composer-wrap { width: 100%; margin: auto auto 0; padding-bottom: 25px; }
+    .composer {
+      padding: 13px;
+      border: 1px solid #35443a;
+      border-radius: 17px;
+      background: #18221c;
+      box-shadow: 0 14px 45px rgb(0 0 0 / 16%);
+    }
+    textarea {
+      width: 100%;
+      min-height: 54px;
+      max-height: 180px;
+      resize: vertical;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #edf4ef;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    textarea::placeholder { color: #84938a; }
+    .composer-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .hint { color: #87958c; font-size: 11px; }
+    .actions { display: flex; align-items: center; gap: 8px; }
+    .clear, .send {
+      min-height: 36px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .clear {
+      padding: 0 11px;
+      border: 1px solid #35443a;
+      background: transparent;
+      color: #b8c5bc;
+      font-size: 12px;
+    }
+    .send {
+      min-width: 86px;
+      padding: 0 14px;
+      border: 0;
+      background: var(--accent);
+      color: var(--accent-ink);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .clear:hover { background: #202c24; }
+    .send:hover:not(:disabled) { background: #d0f7df; }
+    button:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    button:disabled { cursor: wait; opacity: .6; }
+    .footnote { margin: 11px 0 0; color: #78877e; font-size: 10px; text-align: center; }
+
+    @media (max-width: 540px) {
+      .shell { width: min(100% - 28px, 900px); }
+      header { height: 66px; }
+      .brand-caption { display: none; }
+      .welcome { padding-top: 36px; }
+      .bubble { max-width: 88%; font-size: 13px; }
+      .hint { max-width: 160px; line-height: 1.4; }
+      .composer-wrap { padding-bottom: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">✳</div>
+        <div>
+          <div class="brand-name">Personal AI Agent</div>
+          <div class="brand-caption">Your thoughtful work partner</div>
+        </div>
+      </div>
+      <div class="status" id="status" aria-live="polite">Ready to help</div>
+    </header>
+    <main>
+      <section class="welcome" id="welcome" aria-labelledby="welcome-title">
+        <div class="eyebrow">A little more momentum</div>
+        <h1 id="welcome-title">What can I help with?</h1>
+        <p class="intro">Ask a question or talk through an idea. Your conversation stays in this browser session.</p>
+      </section>
+      <section class="conversation" id="conversation" aria-label="Conversation" aria-live="polite"></section>
+      <div class="composer-wrap">
+        <form class="composer" id="chat-form">
+          <label for="message" hidden>Message</label>
+          <textarea id="message" name="message" placeholder="Message your assistant..." maxlength="10000" required></textarea>
+          <div class="composer-actions">
+            <span class="hint">Enter to send · Shift + Enter for a new line</span>
+            <div class="actions">
+              <button class="clear" id="clear" type="button">New chat</button>
+              <button class="send" id="send" type="submit">Send</button>
+            </div>
+          </div>
+        </form>
+        <p class="footnote">Responses are generated by your configured AI provider. Check important information.</p>
+      </div>
+    </main>
+  </div>
+  <script>
+    const form = document.querySelector("#chat-form");
+    const input = document.querySelector("#message");
+    const sendButton = document.querySelector("#send");
+    const clearButton = document.querySelector("#clear");
+    const conversation = document.querySelector("#conversation");
+    const welcome = document.querySelector("#welcome");
+    const status = document.querySelector("#status");
+    const history = [];
+
+    function addMessage(role, text, isError = false) {
+      const row = document.createElement("article");
+      row.className = `message ${role}`;
+      const avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.setAttribute("aria-hidden", "true");
+      avatar.textContent = role === "user" ? "You" : "✳";
+      const bubble = document.createElement("div");
+      bubble.className = `bubble${isError ? " error" : ""}`;
+      bubble.textContent = text;
+      row.append(avatar, bubble);
+      conversation.append(row);
+      row.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      return row;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const message = input.value.trim();
+      if (!message || sendButton.disabled) return;
+
+      welcome.hidden = true;
+      addMessage("user", message);
+      input.value = "";
+      input.focus();
+      sendButton.disabled = true;
+      clearButton.disabled = true;
+      sendButton.textContent = "Thinking…";
+      status.textContent = "Working on it";
+      const pending = addMessage("assistant", "Thinking…");
+
+      try {
+        const response = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message, history: history.slice(-20) })
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.detail || "The request could not be completed.");
+        }
+        if (typeof result.reply !== "string") {
+          throw new Error("The assistant returned an invalid response.");
+        }
+        pending.querySelector(".bubble").textContent = result.reply;
+        history.push({ role: "user", content: message });
+        history.push({ role: "assistant", content: result.reply });
+        status.textContent = "Ready to help";
+      } catch (error) {
+        pending.querySelector(".bubble").textContent =
+          error instanceof TypeError
+            ? "Could not connect to the agent. Check that the service is running and try again."
+            : error.message;
+        pending.querySelector(".bubble").classList.add("error");
+        status.textContent = "Check connection";
+      } finally {
+        sendButton.disabled = false;
+        clearButton.disabled = false;
+        sendButton.textContent = "Send";
+        input.focus();
+      }
+    });
+
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        form.requestSubmit();
+      }
+    });
+
+    clearButton.addEventListener("click", () => {
+      history.length = 0;
+      conversation.replaceChildren();
+      welcome.hidden = false;
+      status.textContent = "Ready to help";
+      input.value = "";
+      input.focus();
+    });
+  </script>
+</body>
+</html>

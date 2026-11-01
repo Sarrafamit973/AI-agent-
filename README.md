@@ -1,9 +1,9 @@
 # Personal AI Agent
 
-A small, locally runnable FastAPI service that forwards a user message to a
-configurable OpenAI-compatible chat-completions API. This is the project's
-working foundation; planning, tools, memory, background jobs, and approvals are
-not implemented yet.
+A locally runnable personal AI assistant with a responsive browser chat
+interface and a FastAPI backend. It forwards conversation turns to a
+configurable OpenAI-compatible chat-completions API. Task planning, tools,
+persistent memory, background jobs, and approvals are not implemented yet.
 
 ## Requirements
 
@@ -57,8 +57,8 @@ From the repository root:
 python -m uvicorn personal_ai_agent.app:app --app-dir src --reload
 ```
 
-The API is available at `http://127.0.0.1:8000`. Interactive API
-documentation is at `http://127.0.0.1:8000/docs`.
+Open `http://127.0.0.1:8000` for the chat interface. Interactive API
+documentation is available at `http://127.0.0.1:8000/docs`.
 
 Check service health:
 
@@ -75,9 +75,12 @@ Invoke-RestMethod -Method Post `
   -Body '{"message":"Hello"}'
 ```
 
-`/chat` returns `{"reply":"..."}`. It returns HTTP 503 if no API key is
-configured, HTTP 422 for invalid input, HTTP 504 on provider timeouts, and HTTP
-502 for provider/network errors or an invalid provider response.
+`/chat` accepts `{"message":"...","history":[]}` and returns
+`{"reply":"..."}`. History may contain up to 20 prior user/assistant messages.
+It is kept in the current browser page only. The endpoint returns HTTP 503 if no
+API key is configured, HTTP 422 for invalid input, HTTP 504 on provider
+timeouts, and HTTP 502 for provider/network errors or an invalid provider
+response.
 
 ## Project layout
 
@@ -87,8 +90,9 @@ src/personal_ai_agent/
   app.py                        FastAPI application and routes
   config.py                     Environment-backed settings
   llm.py                        OpenAI-compatible provider client
+  static/index.html             Responsive browser chat interface
 tests/
-  test_app.py                   API and provider-boundary tests
+  test_app.py                   UI, API, and provider-boundary tests
 ```
 
 See [ARCHITECTURE.md](./ARCHITECTURE.md) for request flow and boundaries, and
@@ -96,10 +100,10 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for request flow and boundaries, and
 
 ## Current status
 
-Implemented: health endpoint, validated single-message chat endpoint,
-configurable asynchronous provider client, explicit upstream error handling,
-and mocked automated tests.
+Implemented: responsive browser chat interface, transient conversation context,
+health endpoint, validated chat endpoint, configurable asynchronous provider
+client, explicit upstream error handling, and mocked automated tests.
 
 Not implemented: task planning, multi-step execution, tools, persistent memory,
-background tasks, approval workflows, or a frontend. A live provider request
-has not been verified.
+background tasks, or approval workflows. A live provider request has not been
+verified.
